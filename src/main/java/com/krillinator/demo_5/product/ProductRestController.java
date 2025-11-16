@@ -28,30 +28,25 @@ public class ProductRestController {
 
     @GetMapping("/debug")
     public Mono<ResponseEntity<List<Product>>> getAllProductsInDatabase() {
-
         return productService.getAllProducts()
                 .collectList()
-                .map(result -> ResponseEntity.ok().body(result)
-                );
+                .map(result -> ResponseEntity.ok().body(result));
     }
 
     @PostMapping("/create")
     public Mono<ResponseEntity<ProductResponseDTO>> createNewProduct(
             @Valid @RequestBody ProductValidatorDTO productValidatorDTO
     ) {
-
         return productService.createNewProduct(productValidatorDTO)
                 .map(product -> ResponseEntity
                         .status(HttpStatus.CREATED)
-                        .body(productMapper.toResponseDTO(product))
-                );
+                        .body(productMapper.toResponseDTO(product)));
     }
 
-    @DeleteMapping("/delete")
+    // <-- FIX:
+    @DeleteMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<Void> deleteProductById(@PathVariable @Positive Long id) {
-
-        return productService.deleteProductById(id)
-                .map(product -> ResponseEntity.status(204)).then();
+        return productService.deleteProductById(id);
     }
-
 }
